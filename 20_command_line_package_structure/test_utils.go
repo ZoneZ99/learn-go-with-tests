@@ -1,4 +1,4 @@
-package main
+package poker
 
 import (
 	"net/http/httptest"
@@ -38,5 +38,12 @@ func assertScoreEquals(t *testing.T, got, want int) {
 	t.Helper()
 	if got != want {
 		t.Errorf("got %d want %d", got, want)
+	}
+}
+
+func assertNoError(t *testing.T, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatalf("didn't expect an error but got one, %v", err)
 	}
 }

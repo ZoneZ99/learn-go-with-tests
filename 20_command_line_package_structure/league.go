@@ -1,8 +1,8 @@
-package main
+package poker
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"io"
 )
 

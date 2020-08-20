@@ -1,10 +1,10 @@
-package main
+package poker
 
 import (
-	"io"
 	"fmt"
-	"net/http/httptest"
+	"io"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
