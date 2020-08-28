@@ -1,9 +1,11 @@
 package poker
 
 import (
+	"fmt"
 	"net/http/httptest"
 	"reflect"
 	"testing"
+	"time"
 )
 
 type StubPlayerStore struct {
@@ -23,6 +25,39 @@ func (s *StubPlayerStore) RecordWin(name string) {
 
 func (s *StubPlayerStore) GetLeague() League {
 	return s.league
+}
+
+type ScheduledAlert struct {
+	At     time.Duration
+	Amount int
+}
+
+type SpyBlindAlerter struct {
+	Alerts []ScheduledAlert
+}
+
+func (s ScheduledAlert) String() string {
+	return fmt.Sprintf("%d chips At %v", s.Amount, s.At)
+}
+
+func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int) {
+	s.Alerts = append(s.Alerts, ScheduledAlert{
+		At:     at,
+		Amount: amount,
+	})
+}
+
+type GameSpy struct {
+	StartedWith  int
+	FinishedWith string
+}
+
+func (g *GameSpy) Start(numberOfPlayers int) {
+	g.StartedWith = numberOfPlayers
+}
+
+func (g *GameSpy) Finish(winner string) {
+	g.FinishedWith = winner
 }
 
 func AssertStatus(t *testing.T, got, want int) {
@@ -76,5 +111,17 @@ func AssertPlayerWin(t *testing.T, store *StubPlayerStore, winner string) {
 
 	if store.winCalls[0] != winner {
 		t.Errorf("did not store correct winner got %q want %q", store.winCalls[0], winner)
+	}
+}
+
+func AssertScheduledAlert(t *testing.T, got ScheduledAlert, want ScheduledAlert) {
+	amountGot := got.Amount
+	if amountGot != want.Amount {
+		t.Errorf("got Amount %d, want %d", amountGot, want.Amount)
+	}
+
+	gotScheduledTime := got.At
+	if gotScheduledTime != want.At {
+		t.Errorf("got scheduled time of %v, want %v", gotScheduledTime, want.At)
 	}
 }
