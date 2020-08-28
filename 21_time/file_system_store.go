@@ -8,8 +8,8 @@ import (
 )
 
 type FileSystemPlayerStore struct {
-	database 	*json.Encoder
-	league		League
+	database *json.Encoder
+	league   League
 }
 
 func FileSystemPlayerStoreFromFile(path string) (*FileSystemPlayerStore, func(), error) {
@@ -47,7 +47,7 @@ func NewFileSystemPlayerStore(database *os.File) (*FileSystemPlayerStore, error)
 
 	return &FileSystemPlayerStore{
 		database: json.NewEncoder(&tape{database}),
-		league: league,
+		league:   league,
 	}, nil
 }
 
@@ -85,7 +85,7 @@ func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
 	return 0
 }
 
-func (f *FileSystemPlayerStore) RecordWin(name string)  {
+func (f *FileSystemPlayerStore) RecordWin(name string) {
 	player := f.league.Find(name)
 
 	if player != nil {

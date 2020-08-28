@@ -12,10 +12,10 @@ func TestGETPlayers(t *testing.T) {
 	store := StubPlayerStore{
 		scores: map[string]int{
 			"Pepper": 20,
-			"Floyd": 10,
+			"Floyd":  10,
 		},
 		winCalls: nil,
-		league: nil,
+		league:   nil,
 	}
 	server := NewPlayerServer(&store)
 
@@ -51,9 +51,9 @@ func TestGETPlayers(t *testing.T) {
 
 func TestStoreWins(t *testing.T) {
 	store := StubPlayerStore{
-		scores: map[string]int{},
+		scores:   map[string]int{},
 		winCalls: nil,
-		league: nil,
+		league:   nil,
 	}
 	server := NewPlayerServer(&store)
 
@@ -78,9 +78,9 @@ func TestLeague(t *testing.T) {
 		}
 
 		store := StubPlayerStore{
-			scores: nil,
+			scores:   nil,
 			winCalls: nil,
-			league: wantedLeague,
+			league:   wantedLeague,
 		}
 		server := NewPlayerServer(&store)
 

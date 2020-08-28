@@ -7,9 +7,9 @@ import (
 )
 
 type StubPlayerStore struct {
-	scores 		map[string]int
-	winCalls	[]string
-	league 		League
+	scores   map[string]int
+	winCalls []string
+	league   League
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {

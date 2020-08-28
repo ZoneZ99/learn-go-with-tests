@@ -17,7 +17,7 @@ func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 
 	tmpfile.Write([]byte(initialData))
 
-	removeFile := func()  {
+	removeFile := func() {
 		tmpfile.Close()
 		os.Remove(tmpfile.Name())
 	}
