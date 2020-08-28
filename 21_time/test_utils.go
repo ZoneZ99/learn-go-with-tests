@@ -1,9 +1,11 @@
 package poker
 
 import (
+	"bytes"
 	"fmt"
 	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -50,10 +52,12 @@ func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int) {
 type GameSpy struct {
 	StartedWith  int
 	FinishedWith string
+	StartCalled  bool
 }
 
 func (g *GameSpy) Start(numberOfPlayers int) {
 	g.StartedWith = numberOfPlayers
+	g.StartCalled = true
 }
 
 func (g *GameSpy) Finish(winner string) {
@@ -115,6 +119,8 @@ func AssertPlayerWin(t *testing.T, store *StubPlayerStore, winner string) {
 }
 
 func AssertScheduledAlert(t *testing.T, got ScheduledAlert, want ScheduledAlert) {
+	t.Helper()
+
 	amountGot := got.Amount
 	if amountGot != want.Amount {
 		t.Errorf("got Amount %d, want %d", amountGot, want.Amount)
@@ -123,5 +129,15 @@ func AssertScheduledAlert(t *testing.T, got ScheduledAlert, want ScheduledAlert)
 	gotScheduledTime := got.At
 	if gotScheduledTime != want.At {
 		t.Errorf("got scheduled time of %v, want %v", gotScheduledTime, want.At)
+	}
+}
+
+func AssertMessagesSentToUser(t *testing.T, stdout *bytes.Buffer, messages ...string) {
+	t.Helper()
+
+	want := strings.Join(messages, "")
+	got := stdout.String()
+	if got != want {
+		t.Errorf("got %q sent to stdout but expected %+v", got, messages)
 	}
 }
