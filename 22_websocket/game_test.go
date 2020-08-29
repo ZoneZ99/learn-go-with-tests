@@ -11,7 +11,7 @@ import (
 func TestGame_Start(t *testing.T) {
 	var dummyPlayerStore = &poker.StubPlayerStore{}
 
-	t.Run("schedules Alerts on game start for 5 players", func(t *testing.T) {
+	t.Run("schedules Alerts on playGame start for 5 players", func(t *testing.T) {
 		blindAlerter := &poker.SpyBlindAlerter{}
 		game := poker.NewGame(blindAlerter, dummyPlayerStore)
 

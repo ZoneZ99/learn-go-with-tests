@@ -7,12 +7,13 @@ import (
 )
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
+	dummyGame := &GameSpy{}
 	database, cleanDatabase := createTempFile(t, `[]`)
 	defer cleanDatabase()
 	store, err := NewFileSystemPlayerStore(database)
 	AssertNoError(t, err)
 
-	server, _ := NewPlayerServer(store)
+	server := mustMakePlayerServer(t, store, dummyGame)
 	player := "Pepper"
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))

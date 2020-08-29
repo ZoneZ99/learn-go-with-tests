@@ -14,7 +14,7 @@ func TestCLI(t *testing.T) {
 	var dummyBlindAlerter = &poker.SpyBlindAlerter{}
 	var dummyPlayerStore = &poker.StubPlayerStore{}
 
-	t.Run("finish game with 'Chris' as winner", func(t *testing.T) {
+	t.Run("finish playGame with 'Chris' as winner", func(t *testing.T) {
 		in := strings.NewReader("1\nChris wins\n")
 		game := &poker.GameSpy{}
 		cli := poker.NewCLI(in, dummyStdOut, game)
@@ -38,7 +38,7 @@ func TestCLI(t *testing.T) {
 		}
 	})
 
-	t.Run("it prompts the user to enter the number of players and starts the game", func(t *testing.T) {
+	t.Run("it prompts the user to enter the number of players and starts the playGame", func(t *testing.T) {
 		stdout := &bytes.Buffer{}
 		in := strings.NewReader("7\n")
 		game := &poker.GameSpy{}
@@ -58,7 +58,7 @@ func TestCLI(t *testing.T) {
 		}
 	})
 
-	t.Run("it prints an error when a non numeric value is entered and does not start the game", func(t *testing.T) {
+	t.Run("it prints an error when a non numeric value is entered and does not start the playGame", func(t *testing.T) {
 		stdout := &bytes.Buffer{}
 		in := strings.NewReader("Pies\n")
 		game := &poker.GameSpy{}
@@ -67,7 +67,7 @@ func TestCLI(t *testing.T) {
 		cli.PlayPoker()
 
 		if game.StartCalled {
-			t.Errorf("game should not have started")
+			t.Errorf("playGame should not have started")
 		}
 
 		wantPrompt := poker.PlayerPrompt + poker.BadPlayerInputErrMsg
@@ -86,6 +86,19 @@ func TestCLI(t *testing.T) {
 		cli := poker.NewCLI(in, dummyStdOut, game)
 		cli.PlayPoker()
 	})
+
+	t.Run("start playGame with 3 players and finish playGame with 'Chris' as winner", func(t *testing.T) {
+		game := &poker.GameSpy{}
+
+		out := &bytes.Buffer{}
+		in := userSends("3", "Chris wins")
+
+		poker.NewCLI(in, out, game).PlayPoker()
+
+		poker.AssertMessagesSentToUser(t, out, poker.PlayerPrompt)
+		poker.AssertGameStartedWith(t, game, 3)
+		poker.AssertGameFinishedWith(t, game, "Chris")
+	})
 }
 
 type failOnEndReader struct {
@@ -101,4 +114,8 @@ func (m failOnEndReader) Read(p []byte) (n int, err error) {
 	}
 
 	return n, err
+}
+
+func userSends(messages ...string) io.Reader {
+	return strings.NewReader(strings.Join(messages, "\n"))
 }

@@ -142,3 +142,17 @@ func AssertMessagesSentToUser(t *testing.T, stdout *bytes.Buffer, messages ...st
 		t.Errorf("got %q sent to stdout but expected %+v", got, messages)
 	}
 }
+
+func AssertGameStartedWith(t *testing.T, game *GameSpy, numberOfPlayersWanted int) {
+	t.Helper()
+	if game.StartedWith != numberOfPlayersWanted {
+		t.Errorf("wanted Start called with %d but got %d", numberOfPlayersWanted, game.StartedWith)
+	}
+}
+
+func AssertGameFinishedWith(t *testing.T, game *GameSpy, winner string) {
+	t.Helper()
+	if game.FinishedWith != winner {
+		t.Errorf("expected finish called with %q but got %q", winner, game.FinishedWith)
+	}
+}
