@@ -3,6 +3,7 @@ package poker_test
 import (
 	"../22_websocket"
 	"fmt"
+	"io/ioutil"
 	"testing"
 	"time"
 )
@@ -14,7 +15,7 @@ func TestGame_Start(t *testing.T) {
 		blindAlerter := &poker.SpyBlindAlerter{}
 		game := poker.NewGame(blindAlerter, dummyPlayerStore)
 
-		game.Start(5)
+		game.Start(5, ioutil.Discard)
 
 		cases := []poker.ScheduledAlert{
 			{0 * time.Second, 100},
@@ -37,7 +38,7 @@ func TestGame_Start(t *testing.T) {
 		blindAlerter := &poker.SpyBlindAlerter{}
 		game := poker.NewGame(blindAlerter, dummyPlayerStore)
 
-		game.Start(7)
+		game.Start(7, ioutil.Discard)
 
 		cases := []poker.ScheduledAlert{
 			{0 * time.Second, 100},

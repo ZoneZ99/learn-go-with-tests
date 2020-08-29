@@ -3,6 +3,7 @@ package poker
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"net/http/httptest"
 	"reflect"
 	"strings"
@@ -42,7 +43,7 @@ func (s ScheduledAlert) String() string {
 	return fmt.Sprintf("%d chips At %v", s.Amount, s.At)
 }
 
-func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int) {
+func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int, to io.Writer) {
 	s.Alerts = append(s.Alerts, ScheduledAlert{
 		At:     at,
 		Amount: amount,
@@ -55,7 +56,7 @@ type GameSpy struct {
 	StartCalled  bool
 }
 
-func (g *GameSpy) Start(numberOfPlayers int) {
+func (g *GameSpy) Start(numberOfPlayers int, to io.Writer) {
 	g.StartedWith = numberOfPlayers
 	g.StartCalled = true
 }
