@@ -3,6 +3,7 @@ package poker
 import (
 	"bytes"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"io"
 	"net/http/httptest"
 	"reflect"
@@ -51,14 +52,17 @@ func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int, to io.Wr
 }
 
 type GameSpy struct {
-	StartedWith  int
-	FinishedWith string
-	StartCalled  bool
+	StartCalled    bool
+	StartedWith    int
+	BlindAlert     []byte
+	FinishedCalled bool
+	FinishedWith   string
 }
 
 func (g *GameSpy) Start(numberOfPlayers int, to io.Writer) {
 	g.StartedWith = numberOfPlayers
 	g.StartCalled = true
+	to.Write(g.BlindAlert)
 }
 
 func (g *GameSpy) Finish(winner string) {
@@ -152,7 +156,29 @@ func AssertGameStartedWith(t *testing.T, game *GameSpy, numberOfPlayersWanted in
 
 func AssertGameFinishedWith(t *testing.T, game *GameSpy, winner string) {
 	t.Helper()
-	if game.FinishedWith != winner {
+
+	passed := retryUntil(500*time.Millisecond, func() bool {
+		return game.FinishedWith == winner
+	})
+
+	if !passed {
 		t.Errorf("expected finish called with %q but got %q", winner, game.FinishedWith)
 	}
+}
+
+func AssertWebsocketGotMsg(t *testing.T, ws *websocket.Conn, want string) {
+	_, msg, _ := ws.ReadMessage()
+	if string(msg) != want {
+		t.Errorf(`got "%s", want "%s"`, string(msg), want)
+	}
+}
+
+func retryUntil(d time.Duration, f func() bool) bool {
+	deadline := time.Now().Add(d)
+	for time.Now().Before(deadline) {
+		if f() {
+			return true
+		}
+	}
+	return false
 }
